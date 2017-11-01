@@ -22,3 +22,16 @@ filter(flights, arr_delay >= 120)
 filter(flights, dest == 'IAH' | dest == 'HOU')
 filter(flights, carrier == 'UA' | carrier == 'AA' | carrier == 'DL')
 filter(flights, month == 7 | month == 8 | month == 9)
+filter(flights, arr_delay > 120 & dep_delay <= 0)
+filter(flights, dep_delay >= 60 & dep_delay - arr_delay > 30)
+filter(flights, dep_time <= 600| dep_time == 2400)
+"2. ?between "
+"3. " 
+sum(is.na(flights$dep_time))
+"4. One TRUE in an OR condition is enough for it to be true. NA does not matter in this case."
+##########################
+
+arrange(flights, year, month, day)
+arrange(flights, desc(arr_delay))
+# missing values are always sorted in the end. 
+df <- tibble(x = c(5, 2, NA))
