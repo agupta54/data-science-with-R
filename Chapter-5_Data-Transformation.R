@@ -35,3 +35,16 @@ arrange(flights, year, month, day)
 arrange(flights, desc(arr_delay))
 # missing values are always sorted in the end. 
 df <- tibble(x = c(5, 2, NA))
+arrange(df, x)
+arrange(df, desc(x))
+
+######################## 5.3.1 Exercises 
+"1. "
+arrange(flights, desc(is.na(dep_time)), dep_time)
+"2. "
+arrange(flights, desc(dep_delay))
+arrange(flights, dep_delay)
+"3. "
+arrange(flights, air_time)
+"4. "
+arrange(flights, desc(distance))
