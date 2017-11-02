@@ -48,3 +48,79 @@ arrange(flights, dep_delay)
 arrange(flights, air_time)
 "4. "
 arrange(flights, desc(distance))
+##########################################
+
+select(flights, year, month, day)
+select(flights, year:day)
+select(flights, -(year:day))
+rename(flights, tail_num = tailnum)
+select(flights, time_hour, air_time, everything())
+
+############################ 5.4.1 Exercises
+"1." 
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+select(flights, starts_with("dep_"), starts_with("arr_"))
+"2. It detects and still selects just one time."
+"3. one_of() selects the elements of the vector in the dataframe. It is useful since 
+we can pass a vector and no need to pass names again and again."
+"4. To incluse case sensitivity we need to add ignore.case = FALSE"
+select(flights, contains("TIME", ignore.case = FALSE))
+#############################################
+
+flights_sml <- select(flights,
+                      year:day,
+                      ends_with("delay"),
+                      distance, 
+                      air_time
+                      )
+mutate(flights_sml,
+       gain = arr_delay - dep_delay,
+       speed = distance / air_time * 60 
+       )
+
+mutate(flights_sml,
+       gain = arr_delay - dep_delay,
+       hours = air_time / 60,
+       gain_per_hour = gain / hours
+)
+
+transmute(flights,
+          gain = arr_delay - dep_delay,
+          hours = air_time / 60,
+          gain_per_hour = gain / hours
+)
+
+####################### 5.5.2 Exercises
+"1. "
+mutate(flights,
+       dep_time_mins = dep_time %% 100 * 60 + dep_time %% 100,
+       sched_dep_time_mins = sched_dep_time %% 100 * 60 + sched_dep_time %% 100) %>%
+select(dep_time, dep_time_mins, sched_dep_time, sched_dep_time_mins)
+
+time2mins <- function(x) {
+  x %% 100 * 60 + x %% 100
+} 
+mutate(flights,
+       dep_time_mins = time2mins(dep_time),
+       sched_dep_time_mins = time2mins(sched_dep_time)) %>%
+  select(dep_time, dep_time_mins, sched_dep_time, sched_dep_time_mins)
+"2. "
+mutate(flights,
+       air_time2 = arr_time - dep_time, 
+       air_time_diff = air_time2 - air_time) %>%
+filter(air_time_diff != 0) %>%
+select(air_time, air_time2, dep_time, arr_time, dest)
+"3. dep_time - sched_dep_time = dep_delay"
+mutate(flights,
+       dep_delay2 = time2mins(dep_time) - time2mins(sched_dep_time)) %>%
+  filter(dep_delay2 != dep_delay) %>%
+  select(dep_time, sched_dep_time, dep_delay, dep_delay2)
+"4. "
+mutate(flights,
+       dep_delay_rank = min_rank(-dep_delay)) %>%
+  arrange(dep_delay_rank) %>% 
+  filter(dep_delay_rank <= 10)
+"5. Error since the length of the longer vector is not a multiple of the length of the shorter vector."
+"6. sin(), cos() etc. "
+##############################################
+
