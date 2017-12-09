@@ -110,3 +110,154 @@ ggplot(data = mpg) +
 ggplot(data = mpg) +
   geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) +
   coord_flip()
+
+ggplot(data = diamonds, mapping = aes(x = price )) + 
+  geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
+
+ggplot(diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+
+ggplot(data = diamonds, mapping = aes(x = price, y = ..density..)) + 
+  geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
+
+################### 7.5.1.1 Exercises ######3####
+ "1. "
+nycflights13::flights %>% 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot() +
+  geom_boxplot(mapping = aes(y = sched_dep_time, x = cancelled))
+
+"3. "
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) +
+  coord_flip()
+
+"4. "
+library("lvplot")
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_lv()
+
+"5. "
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+  geom_violin() +
+  coord_flip()
+"6. "
+library("ggbeeswarm")
+ggplot(data = mpg) +
+  geom_quasirandom(mapping = aes(x = reorder(class, hwy, FUN = median),
+                                 y = hwy))
+ggplot(data = mpg) +
+  geom_quasirandom(mapping = aes(x = reorder(class, hwy, FUN = median),
+                                 y = hwy),
+                   method = "tukey")
+#############################################
+
+ggplot(data = diamonds) + 
+  geom_count(mapping = aes(x = cut, y = color))
+
+diamonds %>%
+  count(color, cut)
+
+diamonds %>%
+  count(color, cut) %>%
+  ggplot(mapping = aes(x = color, y = cut)) + 
+  geom_tile(mapping = aes(fill = n))
+
+############ 7.5.2.1 Exercises ##############
+
+"1. "
+diamonds %>%
+  count(color, cut) %>%
+  group_by(color) %>%
+  mutate(prop = n/ sum(n)) %>%
+  ggplot(mapping = aes(x = color, y = cut)) + 
+  geom_tile(mapping = aes(fill = prop))  
+  
+"2. "
+flights %>%
+  group_by(month, dest) %>%
+  summarise(dep_delay = mean(dep_delay, na.rm = TRUE)) %>%
+  ggplot(aes(x = factor(month), y = dest, fill = dep_delay)) + 
+  geom_tile() + 
+  labs(x = "Month", y = "Destination", fill = "Departure Delay")
+"3. It's usually better to use the categorical variable with a larger number of categories or the longer labels on the y axis. If at all possible, labels should be horizontal because that is easier to read."
+################################################
+
+ggplot(data = diamonds) + 
+  geom_point(mapping = aes(x=carat, y=price))
+
+ggplot(data = diamonds) + 
+  geom_point(mapping = aes(x=carat, y=price), alpha = 1/100)
+
+ggplot(data = smaller) + 
+  geom_bin2d(mapping = aes(x = carat, y = price))
+
+library(hexbin)
+ggplot(data=smaller) + 
+  geom_hex(mapping = aes(x = carat, y = price))
+
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_width(carat, 0.1)))
+
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_number(carat, 20)))
+
+#################7.5.3.1 Exercises #########
+"1."
+ggplot(data = diamonds, 
+       mapping = aes(x = price,
+                     colour = cut_width(carat, 0.3))) +
+  geom_freqpoly()
+
+"2. "
+ggplot(diamonds, aes(x = cut_number(price, 10), y = carat)) +
+  geom_boxplot() +
+  coord_flip() +
+  xlab("Price")
+
+ggplot(diamonds, aes(x = cut_width(price, 2000, boundary = 0), y = carat)) +
+  geom_boxplot(varwidth = TRUE) +
+  coord_flip() +
+  xlab("Price")
+
+"4."
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_hex() +
+  facet_wrap(~ cut, ncol = 1)
+
+ggplot(diamonds, aes(x = cut_number(carat, 5), y = price, color = cut)) +
+  geom_boxplot()
+
+ggplot(diamonds, aes(color = cut_number(carat, 5), y = price, x = cut)) +
+  geom_boxplot()
+#############################################
+
+ggplot(data = faithful) + 
+  geom_point(mapping = aes(x = eruptions, y = waiting))
+
+library(modelr)
+
+mod <- lm(log(price) ~ log(carat), data = diamonds)
+
+diamonds2 <- diamonds %>%
+  add_residuals(mod) %>%
+  mutate(resid = exp(resid))
+
+ggplot(data = diamonds2) + 
+  geom_point(mapping = aes(x = carat, y = resid))
+
+ggplot(data = diamonds2) + 
+  geom_boxplot(mapping = aes(x = cut, y = resid))
+
+ggplot(faithful, aes(eruptions)) + 
+  geom_freqpoly(binwidth = 0.25)
+
+diamonds %>% 
+  count(cut, clarity) %>% 
+  ggplot(aes(clarity, cut, fill = n)) + 
+  geom_tile()
